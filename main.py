@@ -14,3 +14,4 @@ for element in groceries:
     driver.get(f'https://www.nemlig.com/?sortorder=price&search={element}')
     driver.implicitly_wait(2)
     driver.find_element_by_class_name('addtobasket__btn').click()
+    driver.implicitly_wait(1)
