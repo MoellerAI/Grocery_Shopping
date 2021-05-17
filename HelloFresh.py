@@ -1,26 +1,40 @@
+from socket import SO_BROADCAST
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-driver = webdriver.Chrome('/home/mads/Downloads/chromedriver')
+class HelloFreshIngredients:
+    def __init__(self):
+        self.driver = webdriver.Chrome('/home/mads/Downloads/chromedriver')
+        self.ingredients = []
 
-url = 'https://www.hellofresh.dk/recipes/'
-driver.get(url)
-driver.implicitly_wait(5)
-driver.find_element_by_xpath("//button[text()='Accept All Cookies']").click()
+    
+    def start_page(self):
+        url = 'https://www.hellofresh.dk/recipes/'
+        self.driver.get(url)
+        self.driver.implicitly_wait(5)
+        self.driver.find_element_by_xpath("//button[text()='Accept All Cookies']").click()
 
-url = "https://www.hellofresh.dk/recipes/sprod-bbq-kylling-608168b13d429f7be126e67a"
+    def get_ingredients(self, url):
+        self.start_page()
 
-driver.get(url)
-driver.implicitly_wait(4)
-html = driver.page_source
-soup = BeautifulSoup(html)
+        self.driver.get(url)
+        self.driver.implicitly_wait(4)
+        html = self.driver.page_source
+        soup = BeautifulSoup(html)
+        table = soup.find_all('div', {'class': 'fela-_1qz307e'})
+        ingredients = []
+        groceries = []
+        ammount = []
+        
 
-table = soup.find_all('div', {'class': 'fela-_1qz307e'})
-ingredients = []
+        for ingredient in table:
+            ingredients.append(ingredient.find_all('p'))
 
-for ingredient in table:
-    ingredients.append(ingredient.find_all('p'))
+        for ingredient in ingredients:
+            groceries.append(ingredient[1].get_text())
+            ammount.append(ingredient[1].get_text())
 
-for ingredient in ingredients:
-    print(ingredient[1].get_text())
+        self.driver.quit()
+        
+        return groceries
