@@ -1,6 +1,11 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
 from HelloFresh import HelloFreshIngredients
+
+class NemligReceipeShopping:
+    def __init__(self):
+        self.driver = webdriver.Chrome('/home/mads/Downloads/chromedriver')
 
 helloF = HelloFreshIngredients()
 groceries = helloF.get_ingredients('https://www.hellofresh.dk/recipes/dild-og-citronpaneret-torsk-608905cd5666714e3261065f')
@@ -16,6 +21,11 @@ for element in groceries:
         driver.get(f'https://www.nemlig.com/?sortorder=price&search={element}')
         driver.implicitly_wait(2)
         driver.find_element_by_class_name('addtobasket__btn').click()
+        html = driver.page_source
+        soup = BeautifulSoup(html)
+        ammount = soup.find('div', {'class': 'productlist-item__info'})
+        ammount = ammount.get_text().partition('/')[0]
         driver.implicitly_wait(1)
     except:
-        print(element)
+        print('Cannot add', element, 'to the basket')
+        
